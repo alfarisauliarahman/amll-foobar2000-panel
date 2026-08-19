@@ -52,8 +52,21 @@ jobs:
         run: |
           $version = "${{ github.ref_name }}"
           $packageName = "amll-foobar2000-panel-$version"
-          gh release create $version `
-            "$packageName.zip" `
-            "$packageName.zip.sha256" `
-            --title "AMLL foobar2000 Panel $version" `
-            --notes-file RELEASE_NOTES_v0.2.0.md
+          $notesFile = "RELEASE_NOTES_$version.md"
+
+          gh release view $version *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release edit $version `
+              --title "AMLL foobar2000 Panel $version" `
+              --notes-file $notesFile
+            gh release upload $version `
+              "$packageName.zip" `
+              "$packageName.zip.sha256" `
+              --clobber
+          } else {
+            gh release create $version `
+              "$packageName.zip" `
+              "$packageName.zip.sha256" `
+              --title "AMLL foobar2000 Panel $version" `
+              --notes-file $notesFile
+          }
