@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AMLL foobar2000</title>
+  </head>
+  <body>
+    <img id="albumArtBackground" class="album-art-background" alt="" aria-hidden="true" />
+    <div class="background-shade" aria-hidden="true"></div>
+    <button id="settingsToggle" class="settings-toggle" type="button" aria-label="Open lyric settings" onclick="var p=document.getElementById('settingsPanel');p.hidden=!p.hidden;">⚙</button>
+    <aside id="settingsPanel" class="settings-panel" hidden>
+      <div class="settings-header">
+        <strong>Lyric settings</strong>
+        <button id="settingsClose" class="settings-close" type="button" aria-label="Close settings" onclick="document.getElementById('settingsPanel').hidden=true;">×</button>
+      </div>
+
+      <label class="setting-row">
+        <span>Background brightness <output id="bgBrightnessValue">65%</output></span>
+        <input id="bgBrightness" type="range" min="0.2" max="1.5" step="0.05" value="0.65" />
+      </label>
+      <label class="setting-row">
+        <span>Background opacity <output id="bgOpacityValue">75%</output></span>
+        <input id="bgOpacity" type="range" min="0" max="1" step="0.05" value="0.75" />
+      </label>
+      <label class="setting-row">
+        <span>Background blur <output id="bgBlurValue">12px</output></span>
+        <input id="bgBlur" type="range" min="0" max="32" step="1" value="12" />
+      </label>
+      <label class="setting-row">
+        <span>Lyric size <output id="textScaleValue">100%</output></span>
+        <input id="textScale" type="range" min="0.75" max="1.5" step="0.05" value="1" />
+      </label>
+
+      <label class="check-row"><input id="showTranslation" type="checkbox" /> <span>Show translation</span></label>
+      <label class="check-row"><input id="showRomanized" type="checkbox" /> <span>Show romanized</span></label>
+      <label class="check-row"><input id="showStatus" type="checkbox" /> <span>Show status text</span></label>
+
+      <button id="settingsReset" class="reset-button" type="button">Reset settings</button>
+    </aside>
+    <main id="app"></main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

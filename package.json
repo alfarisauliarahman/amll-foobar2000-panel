@@ -1,0 +1,15 @@
+{
+  "name": "amll-foobar-panel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build && node embed-dist.mjs"
+  },
+  "dependencies": {
+    "@applemusic-like-lyrics/core": "^0.5.2",
+    "@applemusic-like-lyrics/lyric": "^1.0.2"
+  },
+  "devDependencies": {
+    "vite": "^7.1.2"
+  }
+}

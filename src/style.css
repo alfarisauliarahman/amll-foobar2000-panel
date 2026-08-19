@@ -1,0 +1,140 @@
+:root {
+  color-scheme: dark;
+  font-family: "SF Pro", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #121212;
+  --bg-brightness: .65;
+  --bg-opacity: .82;
+  --bg-blur: 12px;
+  --text-scale: 1;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  position: relative;
+  background: #121212;
+}
+
+.album-art-background,
+.background-shade {
+  position: fixed;
+  pointer-events: none;
+}
+
+.album-art-background {
+  z-index: 0;
+  inset: -32px;
+  width: calc(100% + 64px);
+  height: calc(100% + 64px);
+  object-fit: cover;
+  opacity: var(--bg-opacity);
+  filter: brightness(var(--bg-brightness)) blur(var(--bg-blur));
+  transform: scale(1.08);
+  transition: opacity 180ms ease;
+}
+
+.album-art-background:not([src]),
+.album-art-background[src=""] {
+  opacity: 0;
+}
+
+.background-shade {
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(18, 18, 18, .28), rgba(18, 18, 18, .82));
+}
+
+#app {
+  position: relative;
+  z-index: 2;
+  padding: 7vh 7vw;
+}
+
+.status {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 2;
+  color: rgba(255, 255, 255, .42);
+  font-size: 12px;
+}
+
+.amll-lyric-player {
+  font-family: "SF Pro", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --amll-lp-color: #fff;
+  --amll-lp-bg-color: rgba(0, 0, 0, .16);
+  --amll-lp-font-size: calc(max(max(5vh, 2.5vw), 12px) * var(--text-scale));
+  height: 100%;
+}
+
+.amll-lyric-player .amll-lyric-line-wrapper {
+  cursor: pointer;
+}
+
+/* Translation and romanization stay mounted in AMLL. Toggling these classes
+   only changes visibility, so playback state and lyric animations are kept. */
+html:not(.show-translation) .FmKaba_lyricLine > .FmKaba_lyricSubLine:nth-child(2),
+html:not(.show-romanized) .FmKaba_lyricLine > .FmKaba_lyricSubLine:nth-child(3),
+html:not(.show-romanized) .FmKaba_romanWord {
+  display: none !important;
+}
+
+.settings-toggle {
+  position: fixed;
+  top: 10px;
+  right: 14px;
+  z-index: 2147483647;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, .75);
+  background: rgba(20, 20, 20, .72);
+  cursor: pointer;
+  font-size: 16px;
+  pointer-events: auto;
+  -webkit-app-region: no-drag;
+}
+
+.settings-panel {
+  position: fixed;
+  top: 48px;
+  right: 14px;
+  z-index: 2147483646;
+  width: min(290px, calc(100vw - 28px));
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, .88);
+  background: rgba(26, 26, 26, .94);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, .45);
+  backdrop-filter: blur(16px);
+  font-size: 12px;
+  pointer-events: auto;
+  -webkit-app-region: no-drag;
+}
+
+.settings-header,
+.setting-row span,
+.check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.settings-header { margin-bottom: 14px; font-size: 13px; }
+.settings-close { border: 0; color: #aaa; background: none; cursor: pointer; font-size: 20px; line-height: 1; }
+.setting-row { display: block; margin: 12px 0; }
+.setting-row output { color: #aaa; }
+.setting-row input { width: 100%; margin-top: 7px; accent-color: #fff; }
+.check-row { justify-content: flex-start; margin: 10px 0; cursor: pointer; }
+.check-row input { accent-color: #fff; }
+.reset-button { width: 100%; margin-top: 8px; padding: 7px; border: 1px solid rgba(255, 255, 255, .18); border-radius: 7px; color: #ddd; background: rgba(255, 255, 255, .08); cursor: pointer; }
