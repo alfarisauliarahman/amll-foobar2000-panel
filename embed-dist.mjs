@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const projectDir = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(projectDir, "dist");
 const outputDirs = [
+  path.resolve(projectDir, "release"),
   path.resolve(projectDir, "..", "..", "outputs", "amll-foobar-panel"),
   path.resolve(process.env.USERPROFILE ?? projectDir, "Downloads"),
 ];

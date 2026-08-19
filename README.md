@@ -4,6 +4,16 @@ An Apple Music-like synchronized TTML lyrics panel for foobar2000, built with
 [`@applemusic-like-lyrics`](https://github.com/amll-dev/applemusic-like-lyrics)
 and hosted through `foo_uie_webview` / WebView2.
 
+![AMLL foobar2000 Panel preview](docs/preview.png)
+
+## Requirements
+
+- Windows 10 or later
+- foobar2000 2.x
+- [foo_uie_webview](https://github.com/stuerp/foo_uie_webview/releases)
+- Microsoft Edge WebView2 Runtime
+- Sidecar `.ttml` lyrics with the same basename as the audio file
+
 ## Current features
 
 - Word-by-word TTML lyrics with click-to-seek
@@ -38,3 +48,18 @@ sidecar TTML files and external artwork.
 This repository contains a WebView template, not a native foobar2000 component.
 End users still need `foo_uie_webview` and Microsoft Edge WebView2.
 
+## Download
+
+Download the ready-to-use ZIP from [GitHub Releases](https://github.com/alfarisauliarahman/amll-foobar2000-panel/releases).
+No Node.js installation is required for the release build. See [INSTALL.md](INSTALL.md).
+
+## Font
+
+SF Pro is used when it is already installed on Windows. The Apple font file is
+not redistributed. Systems without SF Pro automatically fall back to Segoe UI.
+
+## License
+
+This project is licensed under [GNU AGPL v3](LICENSE) because its distributed
+standalone build incorporates AGPL-licensed AMLL packages. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

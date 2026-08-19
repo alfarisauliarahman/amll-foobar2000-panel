@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build standalone panel
+        run: pnpm run build
+
+      - name: Create release package
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          $packageName = "amll-foobar2000-panel-$version"
+          $stage = Join-Path $env:RUNNER_TEMP $packageName
+          New-Item -ItemType Directory -Path $stage -Force | Out-Null
+          Copy-Item release/index.html, INSTALL.md, README.txt, LICENSE, THIRD_PARTY_NOTICES.md -Destination $stage
+          Compress-Archive -Path $stage -DestinationPath "$packageName.zip" -CompressionLevel Optimal
+          $hash = (Get-FileHash "$packageName.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $packageName.zip" | Set-Content "$packageName.zip.sha256" -Encoding ascii
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ github.ref_name }}"
+          $packageName = "amll-foobar2000-panel-$version"
+          gh release create $version `
+            "$packageName.zip" `
+            "$packageName.zip.sha256" `
+            --title "AMLL foobar2000 Panel $version" `
+            --notes-file RELEASE_NOTES_v0.1.0.md
