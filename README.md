@@ -27,3 +27,14 @@ The build creates a standalone `index.html` with its JavaScript and CSS embedded
 In the WebView component preferences, enable **Read files** so the panel can read
 sidecar TTML files and external artwork.
 
+## Documentation
+
+- [Development guide](DEVELOPMENT.md)
+- [Architecture and runtime flow](ARCHITECTURE.md)
+- [Known issues and invariants](KNOWN_ISSUES.md)
+- [Changelog](CHANGELOG.md)
+- [Roadmap](ROADMAP.md)
+
+This repository contains a WebView template, not a native foobar2000 component.
+End users still need `foo_uie_webview` and Microsoft Edge WebView2.
+
