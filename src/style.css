@@ -6,6 +6,11 @@
   --bg-opacity: .82;
   --bg-blur: 12px;
   --text-scale: 1;
+  --lyric-text-align: left;
+  --lyric-align-items: flex-start;
+  --lyric-transform-origin: 0%;
+  --inactive-opacity: .38;
+  --lyric-line-spacing: 1.2;
 }
 
 * { box-sizing: border-box; }
@@ -36,7 +41,6 @@ body {
   object-fit: cover;
   opacity: var(--bg-opacity);
   filter: brightness(var(--bg-brightness)) blur(var(--bg-blur));
-  transform: scale(1.08);
   transition: opacity 180ms ease;
 }
 
@@ -54,7 +58,7 @@ body {
 #app {
   position: relative;
   z-index: 2;
-  padding: 7vh 7vw;
+  padding: 4vh 7vw;
 }
 
 .status {
@@ -71,11 +75,108 @@ body {
   --amll-lp-color: #fff;
   --amll-lp-bg-color: rgba(0, 0, 0, .16);
   --amll-lp-font-size: calc(max(max(5vh, 2.5vw), 12px) * var(--text-scale));
+  --amll-lp-line-width-aspect: 1;
+  line-height: var(--lyric-line-spacing) !important;
   height: 100%;
 }
 
-.amll-lyric-player .amll-lyric-line-wrapper {
+.amll-lyric-player .amll-lyric-line-wrapper,
+.amll-lyric-player .FmKaba_lyricLineWrapper {
   cursor: pointer;
+  padding-block: .4em !important;
+  padding-inline: 0 !important;
+  align-items: var(--lyric-align-items) !important;
+}
+
+.FmKaba_lyricLine {
+  --amll-lp-width: 100% !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  padding: .2em .35em !important;
+  text-align: var(--lyric-text-align) !important;
+  transform-origin: var(--lyric-transform-origin) !important;
+}
+
+.FmKaba_lyricMainLine {
+  box-sizing: border-box;
+  display: block;
+  width: calc(100% + 1em);
+  min-width: calc(100% + 1em);
+  max-width: calc(100% + 1em);
+  margin: -1em 0 -1em -1em;
+  padding: 1em 0 1em 1em;
+  text-align: var(--lyric-text-align) !important;
+}
+
+.FmKaba_lyricMainLine span {
+  text-align: inherit !important;
+}
+
+html[data-lyric-alignment="left"] .FmKaba_lyricLineWrapper {
+  align-items: flex-start !important;
+}
+
+html[data-lyric-alignment="left"] .FmKaba_lyricLine,
+html[data-lyric-alignment="left"] .FmKaba_lyricMainLine,
+html[data-lyric-alignment="left"] .FmKaba_lyricMainLine span {
+  text-align: left !important;
+  transform-origin: 0% !important;
+}
+
+html[data-lyric-alignment="center"] .FmKaba_lyricLineWrapper {
+  align-items: center !important;
+}
+
+html[data-lyric-alignment="center"] .FmKaba_lyricLine,
+html[data-lyric-alignment="center"] .FmKaba_lyricMainLine,
+html[data-lyric-alignment="center"] .FmKaba_lyricMainLine span {
+  text-align: center !important;
+  transform-origin: 50% !important;
+}
+
+html[data-lyric-alignment="right"] .FmKaba_lyricLineWrapper {
+  align-items: flex-end !important;
+}
+
+html[data-lyric-alignment="right"] .FmKaba_lyricLine,
+html[data-lyric-alignment="right"] .FmKaba_lyricMainLine,
+html[data-lyric-alignment="right"] .FmKaba_lyricMainLine span {
+  text-align: right !important;
+  transform-origin: 100% !important;
+}
+
+.FmKaba_lyricLine:not(.FmKaba_active) {
+  opacity: var(--inactive-opacity) !important;
+}
+
+.amll-lyric-player.FmKaba_hasDuetLine .FmKaba_lyricLine:not(.FmKaba_lyricDuetLine) {
+  padding-right: .2em;
+}
+
+.amll-lyric-player.FmKaba_hasDuetLine .FmKaba_lyricDuetLine {
+  padding-left: .2em;
+}
+
+.FmKaba_bottomLine {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.FmKaba_bottomLine .song-credits {
+  max-width: 100%;
+  padding: 1.6em .2em 3em;
+  color: rgba(255, 255, 255, .55);
+  font-size: .58em;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: var(--lyric-text-align);
+}
+
+.FmKaba_bottomLine .song-credits strong {
+  color: rgba(255, 255, 255, .78);
+  font-weight: 600;
 }
 
 /* Translation and romanization stay mounted in AMLL. Toggling these classes
@@ -109,6 +210,8 @@ html:not(.show-romanized) .FmKaba_romanWord {
   right: 14px;
   z-index: 2147483646;
   width: min(290px, calc(100vw - 28px));
+  max-height: calc(100vh - 62px);
+  overflow-y: auto;
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, .16);
   border-radius: 12px;
@@ -135,6 +238,9 @@ html:not(.show-romanized) .FmKaba_romanWord {
 .setting-row { display: block; margin: 12px 0; }
 .setting-row output { color: #aaa; }
 .setting-row input { width: 100%; margin-top: 7px; accent-color: #fff; }
+.compact-setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.compact-setting select { min-width: 96px; padding: 4px 7px; border: 1px solid rgba(255,255,255,.18); border-radius: 6px; color: #eee; background: #262626; }
+.compact-setting input[type="color"] { width: 42px; height: 26px; margin: 0; padding: 2px; border: 1px solid rgba(255,255,255,.18); border-radius: 6px; background: #262626; }
 .check-row { justify-content: flex-start; margin: 10px 0; cursor: pointer; }
 .check-row input { accent-color: #fff; }
 .reset-button { width: 100%; margin-top: 8px; padding: 7px; border: 1px solid rgba(255, 255, 255, .18); border-radius: 7px; color: #ddd; background: rgba(255, 255, 255, .08); cursor: pointer; }

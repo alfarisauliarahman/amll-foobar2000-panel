@@ -2,7 +2,22 @@
 
 All notable changes to this project will be documented here.
 
-## [Unreleased]
+## [0.2.0] - 2026-08-19
+
+### Added
+
+- Left, center, and right lyric alignment.
+- Configurable inactive-line opacity.
+- Wider lyric content with the active line anchored near the upper quarter.
+- Line-spacing control.
+- Standard `.lrc` fallback when TTML is unavailable or invalid.
+- Songwriter credits from Apple Music TTML metadata at the end of the lyrics.
+
+### Changed
+
+- Simplified visual settings by retaining practical lyric and background controls.
+- Expanded the internal lyric content width while preserving normal wrapping.
+- Kept songwriter credits clear instead of applying inactive-line blur.
 
 ## [0.1.0] - 2026-08-19
 
@@ -26,4 +41,3 @@ All notable changes to this project will be documented here.
 - Prevented translation and romanization toggles from resetting AMLL.
 - Corrected Windows artwork paths and external artwork loading.
 - Prioritized manually played tracks over sequential fallback guesses.
-

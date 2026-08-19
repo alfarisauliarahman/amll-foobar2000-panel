@@ -1,4 +1,4 @@
-AMLL foobar2000 Panel v0.1.0
+AMLL foobar2000 Panel v0.2.0
 ================================
 
 This is a WebView template, not a native .fb2k-component.
@@ -17,4 +17,3 @@ Source code:
 https://github.com/alfarisauliarahman/amll-foobar2000-panel
 
 License: GNU AGPL v3. SF Pro is not included.
-

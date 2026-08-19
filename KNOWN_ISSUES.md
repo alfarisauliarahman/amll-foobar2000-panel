@@ -18,10 +18,14 @@ AMLL release (`FmKaba_*`). A dependency upgrade may rename them. If toggles stop
 working after an upgrade, inspect the generated AMLL DOM and update selectors in
 `src/style.css`.
 
-## Sidecar naming
+## Sidecar naming and priority
 
-Only a `.ttml` file with the same basename as the audio file is loaded. Embedded
-lyrics, differently named files, and `.lrc` fallback are not implemented yet.
+A `.ttml` or `.lrc` file must have the same basename as the audio file. TTML has
+priority; LRC is only used when TTML cannot produce lyric lines. Embedded lyrics
+and differently named sidecars are not implemented.
+
+Standard LRC has line timing only. It cannot reproduce TTML word-by-word timing,
+background vocals, or structured translation/romanization metadata.
 
 ## Artwork permissions
 
@@ -43,4 +47,3 @@ The following rules prevent previously observed lag and state corruption:
 - Do not poll and replace lyrics based only on the selected playlist item.
 - Do not prioritize an adjacent-track guess over an exact playing path.
 - Do not load external Vite asset files in the distributed template.
-

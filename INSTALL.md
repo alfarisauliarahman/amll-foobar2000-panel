@@ -19,7 +19,7 @@ Restart foobar2000 when requested.
 
 ## 2. Extract this panel
 
-Download `amll-foobar2000-panel-v0.1.0.zip` from this project's GitHub Release
+Download `amll-foobar2000-panel-v0.2.0.zip` from this project's GitHub Release
 and extract it to a permanent folder. Do not run `index.html` in a normal web
 browser; it needs the foobar2000 WebView host object.
 
@@ -35,16 +35,16 @@ browser; it needs the foobar2000 WebView host object.
 
 ## 4. Add lyrics
 
-Place an Apple Music-compatible TTML file beside the audio file, using exactly
-the same basename:
+Place an Apple Music-compatible TTML or standard LRC file beside the audio file,
+using exactly the same basename:
 
 ```text
 01. Song.m4a
 01. Song.ttml
 ```
 
-The panel currently reads `.ttml` only. `.lrc` fallback is planned but not yet
-implemented.
+TTML is preferred because it supports word-by-word timing and richer metadata.
+If TTML is missing or invalid, the panel automatically tries `01. Song.lrc`.
 
 ## Troubleshooting
 
@@ -61,4 +61,3 @@ implemented.
 
 The panel settings button controls background brightness, opacity, blur, lyric
 size, translation, romanization, and status visibility.
-

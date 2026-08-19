@@ -12,16 +12,11 @@ architecture notes before implementing items that affect playback state.
 
 ## Display customization
 
-- Lyric alignment controls.
-- Active-line glow strength and color.
-- Inactive-line opacity.
-- Font weight and line spacing.
-- Optional artwork zoom or parallax.
+- Per-section settings collapse/expand controls.
 - Auto-hide settings button.
 
 ## Lyrics
 
-- `.lrc` fallback when TTML is unavailable.
 - Configurable sidecar search paths.
 - Better empty-state and malformed-TTML reporting.
 - Optional translation and romanization style controls.
@@ -39,4 +34,3 @@ A dedicated `.fb2k-component` could eventually bundle the panel and expose a
 direct now-playing path. This would require a maintained C++ component, foobar2000
 SDK builds for x86/x64, WebView2 integration and separate release packaging. It
 is intentionally out of scope for the current template-based version.
-

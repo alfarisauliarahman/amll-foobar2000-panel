@@ -73,6 +73,8 @@ After a behavioral change, verify all of these in foobar2000:
 - Artwork changes with the playing track.
 - Dragging every slider does not reset or reload lyrics.
 - Translation and romanization toggles do not call `setLyricLines()`.
+- Alignment, opacity, and spacing update live.
+- A same-basename `.lrc` loads when `.ttml` is absent or invalid.
 - The settings panel remains clickable above the lyric player.
 
 ## Releases
@@ -81,4 +83,3 @@ For end users, publish a ZIP containing the standalone `index.html` and an
 installation guide. Do not rename the ZIP or HTML to `.fb2k-component`; this
 project is a template that depends on the separate native `foo_uie_webview`
 component.
-

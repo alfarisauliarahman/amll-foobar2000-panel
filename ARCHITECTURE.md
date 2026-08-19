@@ -68,15 +68,22 @@ exact playing path > delayed exact path > adjacent playlist fallback
 Never make the adjacent fallback unconditional; that previously caused manually
 selected tracks to display lyrics from track 1 or track 7.
 
-## TTML loading
+## TTML and LRC loading
 
-The audio extension is replaced with `.ttml`. The file is read synchronously
-through `host.readAllText(path, 65001)` and parsed with
-`@applemusic-like-lyrics/lyric`.
+The audio extension is first replaced with `.ttml`. The file is read
+synchronously through `host.readAllText(path, 65001)` and parsed with
+`@applemusic-like-lyrics/lyric`. If TTML is missing, empty, malformed, or has no
+lyric lines, a matching `.lrc` sidecar is read with `parseLrc()`.
+
+TTML always has priority because it can carry word timing, background vocals,
+translation, and romanization. Standard LRC fallback is line-synchronized.
 
 Parsed lines are cached by absolute audio path. `setLyricLines()` is allowed
 only when a track actually changes or a new file is loaded. It must not be used
 for visual settings.
+
+Apple Music TTML `<songwriters>` metadata is deduplicated and rendered through
+AMLL's native bottom-line element, keeping credits inside the lyric scroll.
 
 ## Translation and romanization
 
@@ -108,6 +115,10 @@ before album art is ready.
 Slider input updates CSS custom properties directly. Persistence is debounced
 to avoid repeated localStorage writes during dragging.
 
+Alignment, inactive opacity, and line spacing are visual-only settings. The
+player uses its native alignment anchor to keep the active line near the upper
+quarter of the panel, while CSS overrides AMLL's desktop width restriction.
+
 Translation and romanization toggles only change root CSS classes. No settings
 control should query the current track, re-read TTML, or call `setLyricLines()`.
 
@@ -116,4 +127,3 @@ control should query the current track, re-read TTML, or call `setLyricLines()`.
 The production deliverable must be one standalone HTML file. Depending on
 separate `assets/` files caused unreliable local-file loading in WebView2, so
 `embed-dist.mjs` inlines the generated JavaScript and CSS after every Vite build.
-

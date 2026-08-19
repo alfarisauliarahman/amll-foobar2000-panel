@@ -22,7 +22,11 @@ and hosted through `foo_uie_webview` / WebView2.
 - Blurred album-art background
 - SF Pro font support when installed on Windows
 - Live brightness, opacity, blur, and lyric-size controls
+- Full-width lyric alignment, inactive opacity, and line-spacing controls
+- Active lyric positioning near the upper quarter of the panel
 - Translation and romanization visibility toggles without reloading lyrics
+- Automatic `.lrc` fallback when a matching `.ttml` file is unavailable
+- TTML songwriter credits at the end of the lyric view when provided by Apple Music
 
 ## Build
 

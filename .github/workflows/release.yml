@@ -56,4 +56,4 @@ jobs:
             "$packageName.zip" `
             "$packageName.zip.sha256" `
             --title "AMLL foobar2000 Panel $version" `
-            --notes-file RELEASE_NOTES_v0.1.0.md
+            --notes-file RELEASE_NOTES_v0.2.0.md

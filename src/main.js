@@ -1,6 +1,6 @@
 import { LyricPlayer } from "@applemusic-like-lyrics/core";
 import "@applemusic-like-lyrics/core/style.css";
-import { parseTTML } from "@applemusic-like-lyrics/lyric";
+import { parseLrc, parseTTML } from "@applemusic-like-lyrics/lyric";
 import "./style.css";
 
 const host = globalThis.chrome?.webview?.hostObjects?.sync?.foo_uie_webview;
@@ -13,6 +13,7 @@ app.append(status);
 
 const player = new LyricPlayer();
 player.setLyricLines([]);
+player.setAlignPosition(0.25);
 app.append(player.getElement());
 
 // AMLL emits a `line-click` event, but it does not know how to control
@@ -37,6 +38,9 @@ const defaultSettings = {
   bgOpacity: 0.75,
   bgBlur: 12,
   textScale: 1,
+  lyricAlignment: "left",
+  inactiveOpacity: 0.38,
+  lineSpacing: 1.2,
   showTranslation: false,
   showRomanized: false,
   showStatus: true,
@@ -64,6 +68,9 @@ const settingsInputs = {
   bgOpacity: document.querySelector("#bgOpacity"),
   bgBlur: document.querySelector("#bgBlur"),
   textScale: document.querySelector("#textScale"),
+  lyricAlignment: document.querySelector("#lyricAlignment"),
+  inactiveOpacity: document.querySelector("#inactiveOpacity"),
+  lineSpacing: document.querySelector("#lineSpacing"),
   showTranslation: document.querySelector("#showTranslation"),
   showRomanized: document.querySelector("#showRomanized"),
   showStatus: document.querySelector("#showStatus"),
@@ -82,10 +89,22 @@ function displayLines(lines) {
 }
 
 function applyVisualSettings() {
+  const alignment = {
+    left: ["left", "flex-start", "0%"],
+    center: ["center", "center", "50%"],
+    right: ["right", "flex-end", "100%"],
+  }[settings.lyricAlignment] ?? ["left", "flex-start", "0%"];
+
   document.documentElement.style.setProperty("--bg-brightness", settings.bgBrightness);
   document.documentElement.style.setProperty("--bg-opacity", settings.bgOpacity);
   document.documentElement.style.setProperty("--bg-blur", `${settings.bgBlur}px`);
   document.documentElement.style.setProperty("--text-scale", settings.textScale);
+  document.documentElement.style.setProperty("--lyric-text-align", alignment[0]);
+  document.documentElement.style.setProperty("--lyric-align-items", alignment[1]);
+  document.documentElement.style.setProperty("--lyric-transform-origin", alignment[2]);
+  document.documentElement.dataset.lyricAlignment = settings.lyricAlignment;
+  document.documentElement.style.setProperty("--inactive-opacity", settings.inactiveOpacity);
+  document.documentElement.style.setProperty("--lyric-line-spacing", settings.lineSpacing);
   document.documentElement.classList.toggle("show-translation", settings.showTranslation);
   document.documentElement.classList.toggle("show-romanized", settings.showRomanized);
   status.hidden = !settings.showStatus;
@@ -94,6 +113,8 @@ function applyVisualSettings() {
   document.querySelector("#bgOpacityValue").textContent = `${Math.round(settings.bgOpacity * 100)}%`;
   document.querySelector("#bgBlurValue").textContent = `${settings.bgBlur}px`;
   document.querySelector("#textScaleValue").textContent = `${Math.round(settings.textScale * 100)}%`;
+  document.querySelector("#inactiveOpacityValue").textContent = `${Math.round(settings.inactiveOpacity * 100)}%`;
+  document.querySelector("#lineSpacingValue").textContent = Number(settings.lineSpacing).toFixed(2);
 }
 
 function applySettings() {
@@ -125,7 +146,9 @@ document.querySelector("#settingsReset").addEventListener("click", () => {
 });
 for (const [key, input] of Object.entries(settingsInputs)) {
   input.addEventListener("input", () => {
-    settings[key] = input.type === "checkbox" ? input.checked : Number(input.value);
+    settings[key] = input.type === "checkbox"
+      ? input.checked
+      : (input.type === "range" ? Number(input.value) : input.value);
     if (input.type === "checkbox") {
       applyVisualSettings();
     } else {
@@ -182,6 +205,54 @@ function rememberedPath() {
 
 function sidecarPath(path, extension) {
   return path.replace(/\.[^\\/.]+$/, extension);
+}
+
+function parseTtmlCredits(text) {
+  const document = new DOMParser().parseFromString(text, "application/xml");
+  if (document.querySelector("parsererror")) return [];
+  return [...document.getElementsByTagName("songwriter")]
+    .map((node) => node.textContent?.trim() ?? "")
+    .filter((name, index, names) => name && names.indexOf(name) === index);
+}
+
+function displayCredits(credits = []) {
+  const bottom = player.getBottomLineElement();
+  bottom.replaceChildren();
+  if (credits.length === 0) return;
+
+  const block = document.createElement("div");
+  block.className = "song-credits";
+  const label = document.createElement("strong");
+  label.textContent = "Written by: ";
+  block.append(label, document.createTextNode(credits.join(", ")));
+  bottom.append(block);
+}
+
+function readLyrics(path) {
+  const failures = [];
+
+  try {
+    const text = String(host.readAllText(sidecarPath(path, ".ttml"), 65001) ?? "");
+    if (!text.trim()) throw new Error("empty TTML file");
+    const parsed = parseTTML(text);
+    const lines = parsed.lines ?? parsed;
+    if (!Array.isArray(lines) || lines.length === 0) throw new Error("TTML contains no lyric lines");
+    return { lines, format: "TTML", credits: parseTtmlCredits(text) };
+  } catch (error) {
+    failures.push(`TTML: ${error?.message ?? "not found"}`);
+  }
+
+  try {
+    const text = String(host.readAllText(sidecarPath(path, ".lrc"), 65001) ?? "");
+    if (!text.trim()) throw new Error("empty LRC file");
+    const lines = parseLrc(text);
+    if (!Array.isArray(lines) || lines.length === 0) throw new Error("LRC contains no lyric lines");
+    return { lines, format: "LRC", credits: [] };
+  } catch (error) {
+    failures.push(`LRC: ${error?.message ?? "not found"}`);
+  }
+
+  throw new Error(failures.join(" · "));
 }
 
 function artworkSource(value) {
@@ -268,18 +339,18 @@ function loadLyrics(pathOverride = "") {
   try {
     const cached = lyricCache.get(path);
     if (cached) {
-      player.setLyricLines(displayLines(cached));
+      displayCredits(cached.credits);
+      player.setLyricLines(displayLines(cached.lines));
       lastPath = path;
       syncPlaybackPosition();
       updateArtwork();
-      setStatus("AMLL foobar2000");
+      setStatus(`AMLL foobar2000 · ${cached.format}`);
       return true;
     }
-    const ttml = host.readAllText(sidecarPath(path, ".ttml"), 65001);
-    const parsed = parseTTML(ttml);
-    const lines = parsed.lines ?? parsed;
-    lyricCache.set(path, lines);
-    player.setLyricLines(displayLines(lines));
+    const lyrics = readLyrics(path);
+    lyricCache.set(path, lyrics);
+    displayCredits(lyrics.credits);
+    player.setLyricLines(displayLines(lyrics.lines));
     lastPath = path;
     syncPlaybackPosition();
     try {
@@ -288,11 +359,12 @@ function loadLyrics(pathOverride = "") {
       // Persistent track memory is optional.
     }
     updateArtwork();
-    setStatus("AMLL foobar2000");
+    setStatus(`AMLL foobar2000 · ${lyrics.format}`);
     return true;
   } catch (error) {
+    displayCredits([]);
     player.setLyricLines([]);
-    setStatus(`No TTML: ${error?.message ?? "file not found"}`, true);
+    setStatus(`No lyrics: ${error?.message ?? "TTML/LRC file not found"}`, true);
     return false;
   }
 }
@@ -310,6 +382,7 @@ function scheduleLoad(retries = 5, pathOverride = "") {
 
 function onPlaybackStarting(command = "") {
   playbackCommand = String(command ?? "");
+  document.documentElement.classList.add("is-playing");
   window.setTimeout(() => {
     scheduleArtwork();
     scheduleLoad(10);
@@ -341,7 +414,12 @@ function onPlaybackNewTrack() {
 }
 
 function onPlaybackStop() {
+  document.documentElement.classList.remove("is-playing");
   syncPlaybackPosition();
+}
+
+function onPlaybackPause(paused) {
+  document.documentElement.classList.toggle("is-playing", !paused);
 }
 
 function onPlaybackSeek(time) {
@@ -372,11 +450,13 @@ Object.assign(globalThis, {
   onPlaybackStarting,
   onPlaybackNewTrack,
   onPlaybackStop,
+  onPlaybackPause,
   onPlaybackSeek,
   onPlaybackTime,
 });
 
 applySettings();
+document.documentElement.classList.toggle("is-playing", Boolean(host?.isPlaying && !host?.isPaused));
 scheduleArtwork();
 scheduleLoad();
 animationFrame();
